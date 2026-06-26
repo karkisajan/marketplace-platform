@@ -1,3 +1,5 @@
+import CategoriesPage from "./categories/page";
+
 export default function StorePage() {
   return (
     <div className="bg-white">
@@ -23,6 +25,11 @@ export default function StorePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+      <section>
+        <div className="mx-auto w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-20">
+          <CategoriesPage />
         </div>
       </section>
     </div>

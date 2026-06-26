@@ -1,4 +1,5 @@
+import CategoriesLists from "@/features/category/components/categories.lists";
 
 export default function CategoriesPage() {
-  return <div>This is categories lists...</div>
+  return <CategoriesLists/>
 }
