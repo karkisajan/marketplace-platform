@@ -3,7 +3,7 @@ import Link from "next/link";
 import CategoriesPage from "./categories/page";
 
 const quickLinks = [
-  { label: "Categories", href: "/categories", icon: LayoutGrid },
+  { label: "Categories", href: "/categories/all", icon: LayoutGrid },
   { label: "Products", href: "/products", icon: ShoppingBag },
   { label: "Stores", href: "/stores", icon: Store },
 ];

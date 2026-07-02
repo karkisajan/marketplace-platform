@@ -11,6 +11,7 @@ export const useCategories = ({
   initialPage = 1,
   initialLimit = 10,
 }: UseCategoriesOptions) => {
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState<number>(initialPage);
   const [limit, setLimit] = useState<number>(initialLimit);
