@@ -1,6 +1,5 @@
 import { LayoutGrid, ShoppingBag, Store } from "lucide-react";
 import Link from "next/link";
-import CategoriesPage from "./categories/page";
 
 const quickLinks = [
   { label: "Categories", href: "/categories/all", icon: LayoutGrid },
@@ -40,12 +39,6 @@ export default function StorePage() {
               })}
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          <CategoriesPage />
         </div>
       </section>
     </div>
