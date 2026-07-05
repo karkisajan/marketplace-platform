@@ -1,6 +1,5 @@
 import { LayoutGrid, ShoppingBag, Store } from "lucide-react";
 import Link from "next/link";
-import ProductsPage from "./products/page";
 import HomePageCategoriesLists from "@/features/categories/components/HomePageCategoriesLists";
 
 const quickLinks = [
