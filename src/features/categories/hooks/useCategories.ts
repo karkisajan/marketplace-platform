@@ -22,6 +22,7 @@ export function useCategories({
   useEffect(() => {
     const fetchParentCategories = async () => {
       setIsLoading(true);
+      setError(null);
 
       try {
         const response = await getParentCategories(page, limit);
@@ -40,6 +41,7 @@ export function useCategories({
   return {
     categories,
     meta,
+    page,
     isLoading,
     error,
     setPage,

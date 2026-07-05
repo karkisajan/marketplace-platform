@@ -3,15 +3,9 @@ import { CategoriesResponse } from "../types/category.types";
 import { CategoryTreeResponse } from "../types/category-tree.types";
 
 /* GET - parent categories */
-export const getParentCategories = async (
-  page: number,
-  limit: number,
-): Promise<CategoriesResponse> => {
+export const getParentCategories = async (page: number, limit: number): Promise<CategoriesResponse> => {
   const { data } = await api.get<CategoriesResponse>(
-    `customer/categories/parent-categories`,
-    {
-      params: { page: page, limit: limit },
-    },
+    `customer/categories/parent-categories`, { params: { page: page, limit: limit } },
   );
 
   return data;
