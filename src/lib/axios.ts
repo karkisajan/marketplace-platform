@@ -29,11 +29,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle specific status codes globally
     if (error.response) {
       const { status } = error.response;
       if (status === 401) {
-        // Handle unauthorized (e.g., redirect to login or refresh token)
+        //... Handle unauthorized (e.g., redirect to login or refresh token)
       }
     }
     return Promise.reject(error);

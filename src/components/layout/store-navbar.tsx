@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CategoryMenubar from "@/features/categories/components/CategoryMenubar";
 
 export default function StoreNavbar() {
   return (
-    <header className="w-full">
+    <header className="w-full sticky top-0 z-50">
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto p-6 h-20 flex items-center gap-8">
           <Link href="/" className="flex items-baseline gap-0">
@@ -45,6 +46,7 @@ export default function StoreNavbar() {
           </div>
         </div>
       </nav>
+      <CategoryMenubar/>
     </header>
   );
 }

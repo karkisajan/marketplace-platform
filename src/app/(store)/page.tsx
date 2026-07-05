@@ -1,5 +1,7 @@
 import { LayoutGrid, ShoppingBag, Store } from "lucide-react";
 import Link from "next/link";
+import ProductsPage from "./products/page";
+import HomePageCategoriesLists from "@/features/categories/components/HomePageCategoriesLists";
 
 const quickLinks = [
   { label: "Categories", href: "/categories/all", icon: LayoutGrid },
@@ -18,8 +20,8 @@ export default function StorePage() {
                 Discover what&apos;s nearby
               </h1>
               <p className="text-gray-500 text-xl leading-relaxed">
-                Find local products, categories and stores in one clean
-                marketplace.
+                Find local Products, Categories and Businesses in one clean
+                Marketplace.
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -39,6 +41,11 @@ export default function StorePage() {
               })}
             </div>
           </div>
+        </div>
+      </section>
+      <section>
+        <div className="max-w-7xl mx-auto px-10 py-30">
+          <HomePageCategoriesLists />
         </div>
       </section>
     </div>
