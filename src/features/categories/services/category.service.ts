@@ -7,7 +7,6 @@ export const getParentCategories = async (page: number, limit: number): Promise<
   const { data } = await api.get<CategoriesResponse>(
     `customer/categories/parent-categories`, { params: { page: page, limit: limit } },
   );
-
   return data;
 };
 

@@ -7,6 +7,7 @@ export default function CategoryMenubar() {
   const { categories, isLoading } = useCategoriesTree();
   const [openId, setOpenId] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const visibleCategories = categories.slice(0, 15);
 
   const handleEnter = (id: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -38,7 +39,7 @@ export default function CategoryMenubar() {
     <div className="w-full bg-white font-sans" onMouseLeave={handleLeave}>
       <nav className="relative border-y border-neutral-100">
         <ul className="mx-auto flex flex-wrap max-w-7xl items-center gap-x-7 gap-y-1 px-6 py-3 text-[15px] text-neutral-800">
-          {categories.map((cat) => (
+          {visibleCategories.map((cat) => (
             <li
               key={cat.id}
               onMouseEnter={() => handleEnter(cat.id)}
@@ -64,7 +65,7 @@ export default function CategoryMenubar() {
         </ul>
 
         {/* Mega dropdown */}
-        {categories.map((cat) => {
+        {visibleCategories.map((cat) => {
           if (cat.id !== openId) return null;
           const groups = cat.children ?? [];
           if (groups.length === 0) return null;

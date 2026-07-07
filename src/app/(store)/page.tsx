@@ -1,6 +1,7 @@
 import { LayoutGrid, ShoppingBag, Store } from "lucide-react";
 import Link from "next/link";
 import HomePageCategoriesLists from "@/features/categories/components/HomePageCategoriesLists";
+import HomePageProductsLists from "@/features/products/components/HomePageProductsLists";
 
 const quickLinks = [
   { label: "Categories", href: "/categories/all", icon: LayoutGrid },
@@ -43,8 +44,14 @@ export default function StorePage() {
         </div>
       </section>
       <section>
-        <div className="max-w-7xl mx-auto px-10 py-30">
+        {/* Categories section */}
+        <div className="max-w-7xl mx-auto px-10 mt-25">
           <HomePageCategoriesLists />
+        </div>
+
+        {/* Products section */}
+        <div className="max-w-7xl mx-auto px-10 py-15">
+          <HomePageProductsLists />
         </div>
       </section>
     </div>

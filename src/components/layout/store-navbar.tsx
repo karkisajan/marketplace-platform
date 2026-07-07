@@ -10,10 +10,10 @@ export default function StoreNavbar() {
         <div className="max-w-7xl mx-auto p-6 h-20 flex items-center gap-8">
           <Link href="/" className="flex items-baseline gap-0">
             <span className="text-4xl font-bold text-gray-900 tracking-tight">
-              Lu
+              Market
             </span>
             <span className="text-4xl font-light text-gray-900 tracking-tight italic">
-              mina
+              place
             </span>
           </Link>
           <div className="flex-1 max-w-xl">
@@ -46,7 +46,7 @@ export default function StoreNavbar() {
           </div>
         </div>
       </nav>
-      <CategoryMenubar/>
+      <CategoryMenubar />
     </header>
   );
 }
