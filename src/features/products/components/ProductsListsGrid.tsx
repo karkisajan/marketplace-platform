@@ -1,6 +1,7 @@
 "use client";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import ProductCard from "./ProductCard";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -47,50 +48,125 @@ export default function ProductListsGrid() {
         </div>
       </section>
 
-      {/* Products Filters Section */}
-      <section className="space-y-4">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-1 items-center gap-3">
-            <button
-              type="button"
-              className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-neutral-200 bg-white text-[#433c83] shadow-sm"
-              aria-label="Filters"
-            >
-              <SlidersHorizontal className="h-5 w-5" />
-            </button>
-
-            <div className="flex h-12 flex-1 items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 shadow-sm">
-              <Search className="h-5 w-5 text-neutral-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full border-0 bg-transparent text-[15px] text-neutral-800 outline-none placeholder:text-neutral-400"
-              />
-            </div>
-          </div>
-
+      {/* Filters Sidebar Section */}
+      <div className="grid gap-8 xl:grid-cols-[300px_minmax(0,1fr)]">
+        <aside className="self-start rounded-md border border-neutral-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <Select defaultValue="newest">
-              <SelectTrigger className="h-12 w-full min-w-55 rounded-xl border border-neutral-200 bg-white px-4 text-[15px] text-neutral-800 shadow-sm data-[size=default]:h-12">
-                <SelectValue placeholder="Newest First" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="oldest">Oldest First</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
+            <p className="text-xl font-semibold tracking-tight text-neutral-900">
+              FILTER BY:
+            </p>
           </div>
-        </div>
-      </section>
+          <hr className="my-6 border-gray-300" />
+          <div className="mt-7 space-y-7">
+            <section className="space-y-4">
+              <h3 className="text-[17px] font-semibold text-neutral-900">
+                Category
+              </h3>
+              <Select defaultValue="all-categories">
+                <SelectTrigger className="h-12 w-full rounded-md border border-neutral-200 bg-white px-4 text-[15px] text-neutral-800 shadow-sm data-[size=default]:h-12">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-categories">All Categories</SelectItem>
+                </SelectContent>
+              </Select>
+            </section>
 
-      {/* Products Lists Section */}
-      <section>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          <ProductCard />
+            <section className="space-y-4">
+              <h3 className="text-[17px] font-semibold text-neutral-900">
+                Price Range
+              </h3>
+
+              <div className="space-y-4">
+                <Input
+                  type="text"
+                  placeholder="Min price"
+                  className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
+                />
+                <Input
+                  type="text"
+                  placeholder="1000000"
+                  className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
+                />
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-[17px] font-semibold text-neutral-900">
+                Date Posted
+              </h3>
+
+              <div className="space-y-3 text-[16px] text-neutral-900">
+                {[
+                  "Any time",
+                  "Last 24 hours",
+                  "Last 15 days",
+                  "Last 30 days",
+                ].map((label, index) => (
+                  <label
+                    key={label}
+                    className="flex cursor-pointer items-center gap-3"
+                  >
+                    <input
+                      type="radio"
+                      name="date-posted"
+                      defaultChecked={index === 0}
+                      className="peer sr-only"
+                    />
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900">
+                      ✓
+                    </span>
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+            </section>
+          </div>
+        </aside>
+
+        {/* Search and Filters Section */}
+        <div className="space-y-5">
+          <section className="space-y-4">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex flex-1 items-center gap-3">
+                <div className="flex h-12 flex-1 items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 shadow-sm">
+                  <Search className="h-5 w-5 text-neutral-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search..."
+                    className="h-auto border-0 bg-transparent p-0 text-[15px] text-neutral-800 shadow-none placeholder:text-neutral-400 focus-visible:ring-0"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Select defaultValue="newest">
+                  <SelectTrigger className="h-12 w-full min-w-55 rounded-2xl border border-neutral-200 bg-white px-4 text-[15px] text-neutral-800 shadow-sm data-[size=default]:h-12">
+                    <SelectValue placeholder="Newest First" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="price-low">
+                      Price: Low to High
+                    </SelectItem>
+                    <SelectItem value="price-high">
+                      Price: High to Low
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </section>
+
+          {/* Products Section */}
+          <section>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              <ProductCard />
+            </div>
+          </section>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
