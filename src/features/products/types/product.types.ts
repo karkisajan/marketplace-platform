@@ -4,6 +4,7 @@ interface ProductVariant {
   crossPrice: string;
   stockQuantity: number;
   variantAttributes: Record<string, unknown>;
+  productImage: ProductImage;
 }
 
 interface ProductImage {
@@ -23,7 +24,6 @@ export interface Product {
   description: string;
   createdAt: string;
   productVariant: ProductVariant;
-  productImage: ProductImage;
 }
 
 export interface ProductListsResponse {

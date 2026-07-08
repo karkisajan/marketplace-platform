@@ -8,8 +8,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useProducts } from "../hooks/useProducts";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import ProductCard from "./ProductCard";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function ProductListsGrid() {
+  const [search, setSearch] = useState<string>("");
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+
+  const { products, isLoading, error, hasNextPage, loadMoreProductLists } =
+    useProducts({
+      limit: 8,
+      search: search,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+    });
+
   return (
     <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-7 px-4 py-5 sm:px-6 lg:px-10">
       <section className="relative overflow-hidden rounded-[28px] bg-linear-to-r from-[#951d1d] via-[#b32727] to-[#c5413d] px-6 py-10 text-white shadow-sm sm:px-10 sm:py-12 lg:px-12 lg:py-16">
@@ -79,11 +96,15 @@ export default function ProductListsGrid() {
               <div className="space-y-4">
                 <Input
                   type="text"
+                  value={minPrice}
+                  onChange={(event) => setMinPrice(event.target.value)}
                   placeholder="Min price"
                   className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
                 />
                 <Input
                   type="text"
+                  value={maxPrice}
+                  onChange={(event) => setMaxPrice(event.target.value)}
                   placeholder="1000000"
                   className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
                 />
@@ -132,6 +153,8 @@ export default function ProductListsGrid() {
                   <Search className="h-5 w-5 text-neutral-400" />
                   <Input
                     type="text"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search..."
                     className="h-auto border-0 bg-transparent p-0 text-[15px] text-neutral-800 shadow-none placeholder:text-neutral-400 focus-visible:ring-0"
                   />
@@ -158,11 +181,41 @@ export default function ProductListsGrid() {
             </div>
           </section>
 
+          {/* Loading spinner component */}
+          {isLoading && <LoadingSpinner />}
+
+          {/* Error response (If API fails) */}
+          {!isLoading && error && (
+            <p role="alert" className="text-center text-red-500">
+              {error}
+            </p>
+          )}
+
+          {products.length === 0 && (
+            <div className="flex items-center justify-center">No products found.</div>
+          )}
+
           {/* Products Section */}
           <section>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {/* <ProductCard /> */}
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
             </div>
+
+            {hasNextPage && (
+              <div className="flex justify-center items-center mt-5">
+                <Button
+                  onClick={loadMoreProductLists}
+                  id="laod-more-products-btn"
+                  variant="outline"
+                  size="default"
+                  className="h-12 border-gray-900 text-gray-900 hover:bg-gray-100 font-medium px-6 text-base cursor-pointer"
+                >
+                  {isLoading ? "Loading..." : "Load more products"}
+                </Button>
+              </div>
+            )}
           </section>
         </div>
       </div>

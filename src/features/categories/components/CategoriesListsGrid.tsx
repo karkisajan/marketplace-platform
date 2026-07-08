@@ -16,14 +16,17 @@ export default function CategoriesListsGrid() {
         <p className="text-2xl font-bold">Categories</p>
       </div>
 
+      {/* Loading spinner component */}
       {isLoading && <LoadingSpinner />}
 
+      {/* Error response (If API fails) */}
       {!isLoading && error && (
         <p role="alert" className="text-center text-red-500">
           {error}
         </p>
       )}
 
+      {/* Populate the Categories Lists */}
       {!isLoading && !error && (
         <div className="grid grid-cols-4 gap-x-5 gap-y-10">
           {categories.map((category) => (
