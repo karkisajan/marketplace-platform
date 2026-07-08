@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Category, Meta } from "../types/category.types";
+import { CategoriesResponse, Category, Meta } from "../types/category.types";
 import { getParentCategories } from "../services/category.service";
 
-interface CategoriesParamsProps {
+interface CategoriesParamsOptions {
   initialPage: number;
   initialLimit: number;
 }
@@ -10,7 +10,7 @@ interface CategoriesParamsProps {
 export function useCategories({
   initialPage,
   initialLimit,
-}: CategoriesParamsProps) {
+}: CategoriesParamsOptions) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [meta, setMeta] = useState<Meta | null>(null);
   const [page, setPage] = useState<number>(initialPage);
@@ -25,7 +25,7 @@ export function useCategories({
       setError(null);
 
       try {
-        const response = await getParentCategories(page, limit);
+        const response: CategoriesResponse = await getParentCategories(page, limit);
         setCategories(response.data);
         setMeta(response.meta);
       } catch (error) {

@@ -1,6 +1,5 @@
 "use client";
 import { Search } from "lucide-react";
-import ProductCard from "./ProductCard";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -162,7 +161,7 @@ export default function ProductListsGrid() {
           {/* Products Section */}
           <section>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              <ProductCard />
+              {/* <ProductCard /> */}
             </div>
           </section>
         </div>
