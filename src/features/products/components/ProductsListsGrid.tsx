@@ -204,7 +204,7 @@ export default function ProductListsGrid() {
               ))}
           </section>
 
-          {hasNextPage && (
+          {!isLoading && hasNextPage && (
             <Button
               id="register-customer-btn"
               variant="outline"
