@@ -187,13 +187,21 @@ export default function ProductListsGrid() {
 
           {/* Products Section */}
           <section>
-            {!isLoading && !error && (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
+            {!isLoading &&
+              !error &&
+              (products.length > 0 ? (
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <p className="text-xl font-medium text-neutral-500">
+                    No products found.
+                  </p>
+                </div>
+              ))}
           </section>
 
           {hasNextPage && (
