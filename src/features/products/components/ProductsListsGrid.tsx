@@ -8,8 +8,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ProductCard from "./ProductCard";
+import { useProducts } from "../hooks/useProducts";
+import { useState } from "react";
+import { DatePostedTypeEnum } from "@/types/enums/date-posted.enum";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { Button } from "@/components/ui/button";
 
 export default function ProductListsGrid() {
+  const DATE_FILTERS_OPTIONS: { label: string; value: DatePostedTypeEnum }[] = [
+    { label: "LAST 7 DAYS", value: DatePostedTypeEnum.LAST_7_DAYS },
+    { label: "LAST 24 HOURS", value: DatePostedTypeEnum.LAST_24_HOURS },
+    { label: "LAST 15 DAYS", value: DatePostedTypeEnum.LAST_15_DAYS },
+    { label: "LAST 30 DAYS", value: DatePostedTypeEnum.LAST_30_DAYS },
+  ];
+
+  const [search, setSearch] = useState<string>("");
+  const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(
+    DatePostedTypeEnum.ANY_TIME,
+  );
+
+  const {
+    products,
+    isLoading,
+    error,
+    hasNextPage,
+    nextPageCursor,
+    loadMoreProducts,
+  } = useProducts({ limit: 9, search: search, datePosted: datePosted });
+
   return (
     <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-7 px-4 py-5 sm:px-6 lg:px-10">
       <section className="relative overflow-hidden rounded-[28px] bg-linear-to-r from-[#951d1d] via-[#b32727] to-[#c5413d] px-6 py-10 text-white shadow-sm sm:px-10 sm:py-12 lg:px-12 lg:py-16">
@@ -94,19 +121,26 @@ export default function ProductListsGrid() {
               <h3 className="text-[17px] font-semibold text-neutral-900">
                 Date Posted
               </h3>
-
               <div className="space-y-3 text-[16px] text-neutral-900">
-                <label className="flex cursor-pointer items-center gap-3">
-                  <input
-                    type="radio"
-                    name="date-posted"
-                    className="peer sr-only"
-                  />
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900">
-                    ✓
-                  </span>
-                  <span>Label</span>
-                </label>
+                {DATE_FILTERS_OPTIONS.map((dateOption) => (
+                  <label
+                    key={dateOption.label}
+                    className="flex cursor-pointer items-center gap-3"
+                  >
+                    <input
+                      type="radio"
+                      name="date-posted"
+                      className="peer sr-only"
+                      checked={datePosted === dateOption.value}
+                      value={dateOption.value}
+                      onChange={() => setDatePosted(dateOption.value)}
+                    />
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900">
+                      ✓
+                    </span>
+                    <span>{dateOption.label}</span>
+                  </label>
+                ))}
               </div>
             </section>
           </div>
@@ -121,6 +155,8 @@ export default function ProductListsGrid() {
                   <Search className="h-5 w-5 text-neutral-400" />
                   <Input
                     type="text"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search..."
                     className="h-auto border-0 bg-transparent p-0 text-[15px] text-neutral-800 shadow-none placeholder:text-neutral-400 focus-visible:ring-0"
                   />
@@ -147,12 +183,36 @@ export default function ProductListsGrid() {
             </div>
           </section>
 
+          {/* Loading spinner state */}
+          {isLoading && <LoadingSpinner />}
+
+          {/* Error handler state */}
+          {!isLoading && error && (
+            <p className="text-center text-red-500">{error}</p>
+          )}
+
           {/* Products Section */}
           <section>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {/* Products will be mapped here */}
-            </div>
+            {!isLoading && !error && (
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
           </section>
+
+          {hasNextPage && (
+            <Button
+              id="register-customer-btn"
+              variant="outline"
+              size="default"
+              className="flex justify-center items-center h-12 border-gray-900 text-gray-900 hover:bg-gray-100 font-medium px-6 text-base cursor-pointer"
+              onClick={loadMoreProducts}
+            >
+              {isLoading ? <LoadingSpinner /> : "Load more products"}
+            </Button>
+          )}
         </div>
       </div>
     </div>
