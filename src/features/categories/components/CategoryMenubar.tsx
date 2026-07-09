@@ -1,10 +1,9 @@
 "use client";
 import { useState, useRef } from "react";
 import { ChevronDown } from "lucide-react";
-import { useCategoriesTree } from "../hooks/useCategory-tree";
-
 export default function CategoryMenubar() {
-  const { categories, isLoading } = useCategoriesTree();
+  const categories: any[] = [];
+  const isLoading = false;
   const [openId, setOpenId] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const visibleCategories = categories.slice(0, 15);
@@ -83,14 +82,14 @@ export default function CategoryMenubar() {
                     gridTemplateColumns: `repeat(${Math.min(groups.length, 4)}, minmax(0, 1fr))`,
                   }}
                 >
-                  {groups.map((group) => (
+                  {groups.map((group: any) => (
                     <div key={group.id}>
                       <h3 className="mb-4 text-[15px] font-semibold text-neutral-900">
                         {group.name}
                       </h3>
                       {group.children && group.children.length > 0 && (
                         <ul className="space-y-3">
-                          {group.children.map((item) => (
+                          {group.children.map((item: any) => (
                             <li key={item.id}>
                               <a
                                 href={`/categories/${item.slug}`}

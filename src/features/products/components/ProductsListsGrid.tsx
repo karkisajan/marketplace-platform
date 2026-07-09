@@ -8,35 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useProducts } from "../hooks/useProducts";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import ProductCard from "./ProductCard";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { DatePostedTypeEnum } from "@/types/enums/date-posted.enum";
 
 export default function ProductListsGrid() {
-  const [search, setSearch] = useState<string>("");
-  const [minPrice, setMinPrice] = useState<string>("");
-  const [maxPrice, setMaxPrice] = useState<string>("");
-  const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(DatePostedTypeEnum.ANY_TIME);
-
-  const DATE_POSTED_OPTIONS: { label: string; value: DatePostedTypeEnum }[] = [
-    { label: "LAST_24_HOURS", value: DatePostedTypeEnum.LAST_24_HOURS },
-    { label: "LAST_7_DAYS", value: DatePostedTypeEnum.LAST_7_DAYS },
-    { label: "LAST_15_DAYS", value: DatePostedTypeEnum.LAST_15_DAYS },
-    { label: "LAST_30_DAYS", value: DatePostedTypeEnum.LAST_30_DAYS },
-  ];
-
-  const { products, isLoading, error, hasNextPage, loadMoreProductLists } =
-    useProducts({
-      limit: 9,
-      search: search,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
-      datePosted: datePosted,
-    });
-
   return (
     <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-7 px-4 py-5 sm:px-6 lg:px-10">
       <section className="relative overflow-hidden rounded-[28px] bg-linear-to-r from-[#951d1d] via-[#b32727] to-[#c5413d] px-6 py-10 text-white shadow-sm sm:px-10 sm:py-12 lg:px-12 lg:py-16">
@@ -106,15 +79,11 @@ export default function ProductListsGrid() {
               <div className="space-y-4">
                 <Input
                   type="text"
-                  value={minPrice}
-                  onChange={(event) => setMinPrice(event.target.value)}
                   placeholder="Min price"
                   className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
                 />
                 <Input
                   type="text"
-                  value={maxPrice}
-                  onChange={(event) => setMaxPrice(event.target.value)}
                   placeholder="1000000"
                   className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
                 />
@@ -127,24 +96,17 @@ export default function ProductListsGrid() {
               </h3>
 
               <div className="space-y-3 text-[16px] text-neutral-900">
-                {DATE_POSTED_OPTIONS.map((datePostedOption) => (
-                  <label
-                    key={datePostedOption.label}
-                    className="flex cursor-pointer items-center gap-3"
-                  >
-                    <input
-                      type="radio"
-                      name="date-posted"
-                      checked={datePosted === datePostedOption.value}
-                      onChange={() => setDatePosted(datePostedOption.value)}
-                      className="peer sr-only"
-                    />
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900">
-                      ✓
-                    </span>
-                    <span>{datePostedOption.label}</span>
-                  </label>
-                ))}
+                <label className="flex cursor-pointer items-center gap-3">
+                  <input
+                    type="radio"
+                    name="date-posted"
+                    className="peer sr-only"
+                  />
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900">
+                    ✓
+                  </span>
+                  <span>Label</span>
+                </label>
               </div>
             </section>
           </div>
@@ -159,8 +121,6 @@ export default function ProductListsGrid() {
                   <Search className="h-5 w-5 text-neutral-400" />
                   <Input
                     type="text"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search..."
                     className="h-auto border-0 bg-transparent p-0 text-[15px] text-neutral-800 shadow-none placeholder:text-neutral-400 focus-visible:ring-0"
                   />
@@ -187,43 +147,11 @@ export default function ProductListsGrid() {
             </div>
           </section>
 
-          {/* Loading spinner component */}
-          {isLoading && <LoadingSpinner />}
-
-          {/* Error response (If API fails) */}
-          {!isLoading && error && (
-            <p role="alert" className="text-center text-red-500">
-              {error}
-            </p>
-          )}
-
-          {products.length === 0 && (
-            <div className="flex items-center justify-center">
-              No products found.
-            </div>
-          )}
-
           {/* Products Section */}
           <section>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              {/* Products will be mapped here */}
             </div>
-
-            {hasNextPage && (
-              <div className="flex justify-center items-center mt-5">
-                <Button
-                  onClick={loadMoreProductLists}
-                  id="laod-more-products-btn"
-                  variant="outline"
-                  size="default"
-                  className="h-12 border-gray-900 text-gray-900 hover:bg-gray-100 font-medium px-6 text-base cursor-pointer"
-                >
-                  {isLoading ? "Loading..." : "Load more products"}
-                </Button>
-              </div>
-            )}
           </section>
         </div>
       </div>
