@@ -28,14 +28,8 @@ export default function ProductListsGrid() {
     DatePostedTypeEnum.ANY_TIME,
   );
 
-  const {
-    products,
-    isLoading,
-    error,
-    hasNextPage,
-    nextPageCursor,
-    loadMoreProducts,
-  } = useProducts({ limit: 9, search: search, datePosted: datePosted });
+  const { products, isLoading, error, hasNextPage, loadMoreProducts } =
+    useProducts({ limit: 9, search: search, datePosted: datePosted });
 
   return (
     <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-7 px-4 py-5 sm:px-6 lg:px-10">
