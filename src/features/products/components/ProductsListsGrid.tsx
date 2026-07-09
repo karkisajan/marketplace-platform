@@ -13,11 +13,20 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ProductCard from "./ProductCard";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { DatePostedTypeEnum } from "@/types/enums/date-posted.enum";
 
 export default function ProductListsGrid() {
   const [search, setSearch] = useState<string>("");
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
+  const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(DatePostedTypeEnum.ANY_TIME);
+
+  const DATE_POSTED_OPTIONS: { label: string; value: DatePostedTypeEnum }[] = [
+    { label: "LAST_24_HOURS", value: DatePostedTypeEnum.LAST_24_HOURS },
+    { label: "LAST_7_DAYS", value: DatePostedTypeEnum.LAST_7_DAYS },
+    { label: "LAST_15_DAYS", value: DatePostedTypeEnum.LAST_15_DAYS },
+    { label: "LAST_30_DAYS", value: DatePostedTypeEnum.LAST_30_DAYS },
+  ];
 
   const { products, isLoading, error, hasNextPage, loadMoreProductLists } =
     useProducts({
@@ -25,6 +34,7 @@ export default function ProductListsGrid() {
       search: search,
       minPrice: minPrice ? Number(minPrice) : undefined,
       maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      datePosted: datePosted,
     });
 
   return (
@@ -117,26 +127,22 @@ export default function ProductListsGrid() {
               </h3>
 
               <div className="space-y-3 text-[16px] text-neutral-900">
-                {[
-                  "Any time",
-                  "Last 24 hours",
-                  "Last 15 days",
-                  "Last 30 days",
-                ].map((label, index) => (
+                {DATE_POSTED_OPTIONS.map((datePostedOption) => (
                   <label
-                    key={label}
+                    key={datePostedOption.label}
                     className="flex cursor-pointer items-center gap-3"
                   >
                     <input
                       type="radio"
                       name="date-posted"
-                      defaultChecked={index === 0}
+                      checked={datePosted === datePostedOption.value}
+                      onChange={() => setDatePosted(datePostedOption.value)}
                       className="peer sr-only"
                     />
                     <span className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900">
                       ✓
                     </span>
-                    <span>{label}</span>
+                    <span>{datePostedOption.label}</span>
                   </label>
                 ))}
               </div>

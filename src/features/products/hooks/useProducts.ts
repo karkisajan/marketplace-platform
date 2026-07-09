@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Product, ProductListsResponse } from "../types/product.types";
 import { getProductLists } from "../services/product.service";
+import { DatePostedTypeEnum } from "@/types/enums/date-posted.enum";
 interface ProductParamsOptions {
   limit?: number;
   search?: string;
   minPrice?: number;
   maxPrice?: number;
+  datePosted?: DatePostedTypeEnum;
 }
 
 export function useProducts({
@@ -13,6 +15,7 @@ export function useProducts({
   search,
   minPrice,
   maxPrice,
+  datePosted,
 }: ProductParamsOptions) {
   const [products, setProducts] = useState<Product[]>([]);
   const [hasNextPage, setHasNextPage] = useState<boolean>(true);
@@ -35,6 +38,7 @@ export function useProducts({
           search,
           minPrice,
           maxPrice,
+          datePosted,
         });
 
         if (!cancelled) {
@@ -60,7 +64,7 @@ export function useProducts({
     return () => {
       cancelled = true;
     };
-  }, [limit, search, minPrice, maxPrice]);
+  }, [limit, search, minPrice, maxPrice, datePosted]);
 
   /**
    * Load more products hook function if the next page cursor value exists.
@@ -79,6 +83,7 @@ export function useProducts({
         search: search,
         minPrice: minPrice,
         maxPrice: maxPrice,
+        datePosted: datePosted,
       });
       if (requestId === loadMoreRequestId.current) {
         setProducts((prev) => [...prev, ...response.data]);
