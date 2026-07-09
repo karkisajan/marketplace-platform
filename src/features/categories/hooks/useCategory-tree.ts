@@ -16,7 +16,9 @@ export function useCategoriesTree() {
         const response = await getCategoryTree();
         setCategories(response.data);
       } catch (error) {
-        setError(`Failed to fetch category tree ${error}`);
+        const message: string =
+          error instanceof Error ? error.message : String(error);
+        setError(`Failed to fetch category tree ${message}`);
       } finally {
         setIsLoading(false);
       }

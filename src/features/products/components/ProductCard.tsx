@@ -11,13 +11,13 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md">
-      <div className="relative aspect-16/10 w-full bg-neutral-50">
+      <div className="relative aspect-4/3 w-full bg-neutral-50">
         <Image
           sizes="(max-width: 768px) 50vw, 25vw"
           src={product.productVariant.productImage.imageUrl}
           alt={""}
           fill
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03]"
+          className="object-cover p-4 transition-transform duration-500 group-hover:scale-[1.03]"
         />
       </div>
 

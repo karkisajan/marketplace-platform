@@ -21,7 +21,7 @@ export default function ProductListsGrid() {
 
   const { products, isLoading, error, hasNextPage, loadMoreProductLists } =
     useProducts({
-      limit: 8,
+      limit: 9,
       search: search,
       minPrice: minPrice ? Number(minPrice) : undefined,
       maxPrice: maxPrice ? Number(maxPrice) : undefined,
@@ -192,7 +192,9 @@ export default function ProductListsGrid() {
           )}
 
           {products.length === 0 && (
-            <div className="flex items-center justify-center">No products found.</div>
+            <div className="flex items-center justify-center">
+              No products found.
+            </div>
           )}
 
           {/* Products Section */}

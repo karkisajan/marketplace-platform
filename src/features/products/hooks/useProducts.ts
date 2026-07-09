@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Product, ProductListsResponse } from "../types/product.types";
 import { getProductLists } from "../services/product.service";
-
 interface ProductParamsOptions {
   limit?: number;
   search?: string;
@@ -22,8 +21,11 @@ export function useProducts({
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const loadMoreRequestId = useRef<number>(0);
 
   useEffect(() => {
+    let cancelled: boolean = false;
+
     const fetchProductLists = async () => {
       setIsLoading(true);
       setError(null);
@@ -34,27 +36,42 @@ export function useProducts({
           minPrice,
           maxPrice,
         });
-        setProducts(response.data);
-        setHasNextPage(response.meta.hasNextPage);
-        setNextPageCursor(response.meta.nextPageCursor);
+
+        if (!cancelled) {
+          setProducts(response.data);
+          setHasNextPage(response.meta.hasNextPage);
+          setNextPageCursor(response.meta.nextPageCursor);
+        }
       } catch (error) {
-        setError(`Failed to fetch products ${error}`);
+        if (!cancelled) {
+          const message: string =
+            error instanceof Error ? error.message : String(error);
+          setError(`Failed to fetch products ${message}`);
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchProductLists();
+
+    return () => {
+      cancelled = true;
+    };
   }, [limit, search, minPrice, maxPrice]);
 
   /**
    * Load more products hook function if the next page cursor value exists.
    */
   const loadMoreProductLists = async (): Promise<void> => {
-    if (!hasNextPage || !isLoading) return;
+    if (!hasNextPage || isLoading) return;
 
     setIsLoading(true);
     setError(null);
+    const requestId: number = ++loadMoreRequestId.current;
+
     try {
       const response: ProductListsResponse = await getProductLists({
         limit: limit,
@@ -63,13 +80,21 @@ export function useProducts({
         minPrice: minPrice,
         maxPrice: maxPrice,
       });
-      setProducts((prev) => [...prev, ...response.data]);
-      setHasNextPage(response.meta.hasNextPage);
-      setNextPageCursor(response.meta.nextPageCursor);
+      if (requestId === loadMoreRequestId.current) {
+        setProducts((prev) => [...prev, ...response.data]);
+        setHasNextPage(response.meta.hasNextPage);
+        setNextPageCursor(response.meta.nextPageCursor);
+      }
     } catch (error) {
-      setError(`Failed to fetch products ${error}`);
+      if (requestId === loadMoreRequestId.current) {
+        const message: string =
+          error instanceof Error ? error.message : String(error);
+        setError(`Failed to fetch products ${message}`);
+      }
     } finally {
-      setIsLoading(false);
+      if (requestId === loadMoreRequestId.current) {
+        setIsLoading(false);
+      }
     }
   };
 
