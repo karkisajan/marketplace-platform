@@ -5,7 +5,7 @@ import {
   CategoryNode,
 } from "../types/category-tree.types";
 
-export function useCategories() {
+export function useCategoriesTree() {
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

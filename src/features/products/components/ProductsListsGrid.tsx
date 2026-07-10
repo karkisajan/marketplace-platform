@@ -10,10 +10,13 @@ import {
 } from "@/components/ui/select";
 import ProductCard from "./ProductCard";
 import { useProducts } from "../hooks/useProducts";
-import { useState } from "react";
-import { DatePostedTypeEnum } from "@/types/enums/date-posted.enum";
+import { useMemo, useState } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Button } from "@/components/ui/button";
+import { DatePostedTypeEnum } from "@/common/enums/date-filters.enum";
+import { useCategoriesTree } from "@/features/categories/hooks/useCategoriesTree";
+import { filterLeafNodeCategories } from "@/common/utils/filter-leafCategories.util";
+import { CategoryNode } from "@/features/categories/types/category-tree.types";
 
 export default function ProductListsGrid() {
   const DATE_FILTERS_OPTIONS: { label: string; value: DatePostedTypeEnum }[] = [
@@ -24,12 +27,31 @@ export default function ProductListsGrid() {
   ];
 
   const [search, setSearch] = useState<string>("");
+  const [minPrice, setMinPrice] = useState<string | undefined>("");
+  const [maxPrice, setMaxPrice] = useState<string | undefined>("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined,
+  );
   const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(
     DatePostedTypeEnum.ANY_TIME,
   );
 
   const { products, isLoading, error, hasNextPage, loadMoreProducts } =
-    useProducts({ limit: 9, search: search, datePosted: datePosted });
+    useProducts({
+      limit: 9,
+      search: search,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      categoryId:
+        selectedCategory !== "all-categories" ? selectedCategory : undefined,
+      datePosted: datePosted,
+    });
+
+  const { categories }: { categories: CategoryNode[] } = useCategoriesTree();
+  const leafCategories: CategoryNode[] = useMemo(
+    () => filterLeafNodeCategories(categories),
+    [categories],
+  );
 
   return (
     <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-7 px-4 py-5 sm:px-6 lg:px-10">
@@ -82,12 +104,20 @@ export default function ProductListsGrid() {
               <h3 className="text-[17px] font-semibold text-neutral-900">
                 Category
               </h3>
-              <Select defaultValue="all-categories">
+              <Select
+                defaultValue={selectedCategory}
+                onValueChange={(value) => setSelectedCategory(value)}
+              >
                 <SelectTrigger className="h-12 w-full rounded-md border border-neutral-200 bg-white px-4 text-[15px] text-neutral-800 shadow-sm data-[size=default]:h-12">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all-categories">All Categories</SelectItem>
+                  {leafCategories.map((leafCategory) => (
+                    <SelectItem key={leafCategory.id} value={leafCategory.id}>
+                      {leafCategory.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </section>
@@ -100,11 +130,15 @@ export default function ProductListsGrid() {
               <div className="space-y-4">
                 <Input
                   type="text"
+                  value={minPrice}
+                  onChange={(event) => setMinPrice(event.target.value)}
                   placeholder="Min price"
                   className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
                 />
                 <Input
                   type="text"
+                  value={maxPrice}
+                  onChange={(event) => setMaxPrice(event.target.value)}
                   placeholder="1000000"
                   className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
                 />

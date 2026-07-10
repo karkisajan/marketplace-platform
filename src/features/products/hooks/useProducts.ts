@@ -1,17 +1,23 @@
-import { DatePostedTypeEnum } from "@/types/enums/date-posted.enum";
 import { useEffect, useRef, useState } from "react";
 import { Product, ProductListsResponse } from "../types/product-lists.types";
 import { getProductLists } from "../services/product.service";
+import { DatePostedTypeEnum } from "@/common/enums/date-filters.enum";
 
 interface ProductParamsOptions {
   limit?: number;
   search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  categoryId?: string;
   datePosted?: DatePostedTypeEnum;
 }
 
 export function useProducts({
   limit,
   search,
+  minPrice,
+  maxPrice,
+  categoryId,
   datePosted,
 }: ProductParamsOptions) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -36,6 +42,9 @@ export function useProducts({
           const response: ProductListsResponse = await getProductLists({
             limit: limit,
             search: search,
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            categoryId: categoryId,
             datePosted: datePosted,
           });
           setProducts(response.data);
@@ -60,7 +69,7 @@ export function useProducts({
     return () => {
       cancelled = true;
     };
-  }, [limit, search, datePosted]);
+  }, [limit, search, minPrice, maxPrice, categoryId, datePosted]);
 
   /**
    * Fetch the loadmore products based the the next page cursor value.
@@ -73,6 +82,7 @@ export function useProducts({
         limit: limit,
         cursor: nextPageCursor,
         search: search,
+        categoryId: categoryId,
         datePosted: datePosted,
       });
       if (requestId === loadMoreRequestId.current) {

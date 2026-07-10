@@ -1,11 +1,11 @@
 "use client";
 import { useState, useRef } from "react";
 import { ChevronDown } from "lucide-react";
-import { useCategories } from "../hooks/useCategoriesTree";
 import { CategoryNode } from "../types/category-tree.types";
+import { useCategoriesTree } from "../hooks/useCategoriesTree";
 
 export default function CategoryMenubar() {
-  const { categories, isLoading } = useCategories();
+  const { categories, isLoading } = useCategoriesTree();
   const [openId, setOpenId] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const visibleCategories = categories.slice(0, 15);
