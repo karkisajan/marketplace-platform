@@ -14,9 +14,9 @@ import { useMemo, useState } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { DatePostedTypeEnum } from "@/common/enums/date-filters.enum";
-import { useCategoriesTree } from "@/features/categories/hooks/useCategoriesTree";
 import { filterLeafNodeCategories } from "@/common/utils/filter-leafCategories.util";
 import { CategoryNode } from "@/features/categories/types/category-tree.types";
+import { useCategoriesTree } from "@/features/categories/hooks/useCategoriesTree";
 
 export default function ProductListsGrid() {
   const DATE_FILTERS_OPTIONS: { label: string; value: DatePostedTypeEnum }[] = [
