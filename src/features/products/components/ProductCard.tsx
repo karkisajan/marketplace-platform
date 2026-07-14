@@ -38,8 +38,8 @@ export default function ProductCard({ product }: ProductProps) {
           <div className="flex items-center gap-1 text-sm">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
             <div className="flex items-center gap-1">
-              <span className="font-semibold text-neutral-800">4.5</span>
-              <span className="text-neutral-400">(22)</span>
+              <span className="font-semibold text-neutral-800">{product.averageRatings.toFixed(1)}</span>
+              <span className="text-neutral-400">({product.totalReviews})</span>
             </div>
           </div>
         </div>
