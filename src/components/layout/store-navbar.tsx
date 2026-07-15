@@ -46,7 +46,7 @@ export default function StoreNavbar() {
           </div>
         </div>
       </nav>
-      <CategoryMenubar />
+      {/* <CategoryMenubar /> */}
     </header>
   );
 }

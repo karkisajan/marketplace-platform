@@ -239,7 +239,8 @@ export default function ProductListsGrid() {
           </section>
 
           {!isLoading && hasNextPage && (
-            <Button
+            <div className="mt-10 flex justify-center">
+              <Button
               id="register-customer-btn"
               variant="outline"
               size="default"
@@ -248,6 +249,7 @@ export default function ProductListsGrid() {
             >
               {isLoading ? <LoadingSpinner /> : "Load more products"}
             </Button>
+            </div>
           )}
         </div>
       </div>

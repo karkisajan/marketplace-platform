@@ -8,8 +8,12 @@ interface CategoryParamsOptions {
 }
 
 /* GET - Parent categories  */
-export const getCategoriesLists = async ({ initialPage, initialLimit }: CategoryParamsOptions): Promise<CategoriesListResponse> => {
-  const { data } = await api.get<CategoriesListResponse>(`/categories/parent-categories`,
+export const getCategoriesLists = async ({
+  initialPage,
+  initialLimit,
+}: CategoryParamsOptions): Promise<CategoriesListResponse> => {
+  const { data } = await api.get<CategoriesListResponse>(
+    `/categories/parent-categories`,
     { params: { page: initialPage, limit: initialLimit } },
   );
 
@@ -21,6 +25,7 @@ export const getCategoryTree = async (): Promise<CategoriesTreeResponse> => {
   const { data } = await api.get<CategoriesTreeResponse>(
     `/categories/category-tree`,
   );
-  
+
   return data;
 };
+
