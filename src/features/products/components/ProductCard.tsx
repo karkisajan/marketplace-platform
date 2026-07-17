@@ -1,67 +1,58 @@
 "use client";
 import { Star } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import { Product } from "../types/product-lists.types";
 
-export interface ProductImage {
-  id: string;
-  imageUrl: string;
-}
-
-export interface ProductVariant {
-  id: string;
-  sellingPrice: string;
-  crossPrice: string;
-  productImage: ProductImage;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: string;
-  averageRatings: number;
-  totalReviews: number;
-  productVariant: ProductVariant;
-}
-
+const FALLBACK_IMAGE = "/icons/category.svg";
 interface ProductProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductProps) {
+  const [imgSrc, setImgSrc] = useState<string>(
+    product.productVariant.productImage.imageUrl || FALLBACK_IMAGE,
+  );
+  const isFallback: boolean = imgSrc === FALLBACK_IMAGE;
+
   return (
-    <div className="group relative w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-md">
-      <div className="relative aspect-4/3 w-full bg-neutral-50">
+    <div className="group relative w-full overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-xs transition-all duration-300 hover:shadow-md">
+      <div className="relative aspect-4/3 w-full bg-neutral-50 overflow-hidden">
         <Image
           sizes="(max-width: 768px) 50vw, 25vw"
-          src={product.productVariant.productImage.imageUrl}
-          alt=""
+          src={imgSrc}
+          alt={product.name}
           fill
-          className="object-cover p-4 transition-transform duration-500 group-hover:scale-[1.03]"
+          className={`transition-transform duration-500 ease-out group-hover:scale-[1.04] ${
+            isFallback ? "object-contain p-8 bg-neutral-100" : "object-cover"
+          }`}
+          onError={() => setImgSrc(FALLBACK_IMAGE)}
         />
       </div>
-
-      <div className="space-y-3 px-4 py-4">
-        <h3 className="line-clamp-2 text-base font-semibold leading-snug text-neutral-900">
-          {product.name}
-        </h3>
-
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-[#8B1A1A]">
-              Rs.{product.productVariant.sellingPrice}
-            </span>
-            <span className="text-sm font-light text-neutral-400 line-through">
-              Rs.{product.productVariant.crossPrice}
+      <div className="p-3.5 space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-neutral-800 group-hover:text-[#b32727] transition-colors">
+            {product.name}
+          </h3>
+        </div>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            {product.productVariant.crossPrice && (
+              <span className="text-xs text-neutral-400 line-through">
+                Rs.{Number(product.productVariant.crossPrice).toLocaleString()}
+              </span>
+            )}
+            <span className="text-sm font-bold text-[#b32727]">
+              Rs.{Number(product.productVariant.sellingPrice).toLocaleString()}
             </span>
           </div>
 
-          <div className="flex items-center gap-1 text-sm">
-            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <div className="flex items-center gap-1">
-              <span className="font-semibold text-neutral-800">{product.averageRatings.toFixed(1)}</span>
-              <span className="text-neutral-400">({product.totalReviews})</span>
-            </div>
+          <div className="flex items-center gap-1 text-xs text-neutral-500 shrink-0">
+            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+            <span className="font-semibold text-neutral-800">
+              {product.averageRatings.toFixed(1)}
+            </span>
+            <span>({product.totalReviews})</span>
           </div>
         </div>
       </div>

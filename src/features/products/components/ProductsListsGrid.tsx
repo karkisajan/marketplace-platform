@@ -8,86 +8,108 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMemo, useState } from "react";
-import { DatePostedTypeEnum } from "@/common/enums/date-filters.enum";
-import { CategoryNode } from "@/common/utils/filter-leafCategories.util";
+import { useProductLists } from "../hooks/useProductLists";
+import ProductCard from "./ProductCard";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  CategoryNode,
+  filterLeafNodeCategories,
+} from "@/common/utils/filter-leafCategories.util";
+import { useCategoryTree } from "@/features/categories/hooks/useCategoryTree";
+import {
+  DATE_POSTED_OPTIONS,
+  DatePostedTypeEnum,
+} from "@/common/enums/date-filters.enum";
+import { useState } from "react";
+import { useDebouncedValue } from "@/common/hooks/useDebouncedValue";
 
 export default function ProductListsGrid() {
-  const DATE_FILTERS_OPTIONS: { label: string; value: DatePostedTypeEnum }[] = [
-    { label: "LAST 7 DAYS", value: DatePostedTypeEnum.LAST_7_DAYS },
-    { label: "LAST 24 HOURS", value: DatePostedTypeEnum.LAST_24_HOURS },
-    { label: "LAST 15 DAYS", value: DatePostedTypeEnum.LAST_15_DAYS },
-    { label: "LAST 30 DAYS", value: DatePostedTypeEnum.LAST_30_DAYS },
-  ];
-
   const [search, setSearch] = useState<string>("");
-  const [minPrice, setMinPrice] = useState<string | undefined>("");
-  const [maxPrice, setMaxPrice] = useState<string | undefined>("");
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
-    undefined,
-  );
-  const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(
-    DatePostedTypeEnum.ANY_TIME,
-  );
+  const debouncedSearch = useDebouncedValue(search, 400);
 
-  const leafCategories: CategoryNode[] = [];
+  const [minPrice, setMinPrice] = useState<string>("");
+  const debouncedMinPrice = useDebouncedValue(minPrice, 400);
+
+  const [maxPrice, setMaxPrice] = useState<string>("");
+  const debouncedMaxPrice = useDebouncedValue(maxPrice, 400);
+
+  const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(DatePostedTypeEnum.ANY_TIME);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+
+  const { products, isLoading, error, hasNextPage, loadMoreProducts } =
+    useProductLists({
+      limit: 12,
+      search: debouncedSearch || undefined,
+      datePosted: datePosted,
+      categoryId: selectedCategory || undefined,
+      minPrice: debouncedMinPrice ? Number(minPrice) : undefined,
+      maxPrice: debouncedMaxPrice ? Number(maxPrice) : undefined,
+    });
+
+  const { categories } = useCategoryTree();
+  const leafCategories: CategoryNode[] = filterLeafNodeCategories(categories);
 
   return (
-    <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-7 px-4 py-5 sm:px-6 lg:px-10">
-      <section className="relative overflow-hidden rounded-[28px] bg-linear-to-r from-[#951d1d] via-[#b32727] to-[#c5413d] px-6 py-10 text-white shadow-sm sm:px-10 sm:py-12 lg:px-12 lg:py-16">
-        <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[1.3fr_0.9fr]">
+    <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-6 px-4 py-4 sm:px-6 lg:px-10">
+      <section className="relative overflow-hidden rounded-[20px] bg-linear-to-r from-[#951d1d] via-[#b32727] to-[#c5413d] px-6 py-8 text-white shadow-sm sm:px-8 sm:py-10 lg:px-10 lg:py-10">
+        <div className="relative z-10 grid items-center gap-6 lg:grid-cols-[1.4fr_0.8fr]">
           <div className="max-w-3xl">
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
               Have Something to sell or offer?
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/90 sm:text-xl">
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base">
               Join thousands of sellers who have found buyers through our
               platform.
             </p>
           </div>
-
-          <div className="relative flex min-h-55 items-center justify-center lg:min-h-70">
-            <div className="absolute inset-x-8 bottom-0 h-24 rounded-full bg-white/15 blur-2xl" />
-            <div className="relative h-57.5 w-82.5 rounded-[28px] border border-white/10 bg-[#f6e3c2]/95 shadow-2xl">
-              <div className="flex items-center gap-1.5 rounded-t-[28px] bg-[#ea7070] px-4 py-3">
-                <span className="h-3 w-3 rounded-full bg-white/90" />
-                <span className="h-3 w-3 rounded-full bg-white/90" />
-                <span className="h-3 w-3 rounded-full bg-white/90" />
+          <div className="relative flex min-h-40 items-center justify-center lg:min-h-52">
+            <div className="absolute inset-x-8 bottom-0 h-16 rounded-full bg-white/15 blur-2xl" />
+            <div className="relative h-44 w-64 rounded-[20px] border border-white/10 bg-[#f6e3c2]/95 shadow-2xl">
+              <div className="flex items-center gap-1.5 rounded-t-[20px] bg-[#ea7070] px-4 py-2">
+                <span className="h-2 w-2 rounded-full bg-white/90" />
+                <span className="h-2 w-2 rounded-full bg-white/90" />
+                <span className="h-2 w-2 rounded-full bg-white/90" />
               </div>
-              <div className="grid h-[calc(100%-48px)] grid-cols-3 gap-3 px-5 py-5">
-                <div className="rounded-xl bg-white/75" />
+              <div className="grid h-[calc(100%-36px)] grid-cols-3 gap-2 px-4 py-4">
+                <div className="rounded-lg bg-white/75" />
                 <div className="rounded-full bg-[#f2c552]" />
-                <div className="rounded-xl bg-white/75" />
-                <div className="rounded-xl bg-white/75" />
-                <div className="rounded-xl bg-white/75" />
-                <div className="rounded-xl bg-white/75" />
+                <div className="rounded-lg bg-white/75" />
+                <div className="rounded-lg bg-white/75" />
+                <div className="rounded-lg bg-white/75" />
+                <div className="rounded-lg bg-white/75" />
               </div>
-              <div className="absolute left-1/2 top-1/2 h-30 w-47.5 -translate-x-1/2 -translate-y-1/2 rounded-[999px_999px_36px_36px] bg-[#f3b63e]" />
-              <div className="absolute bottom-10 left-1/2 h-24 w-28 -translate-x-1/2 rounded-[40px_40px_18px_18px] bg-[#f06b71]" />
+              <div className="absolute left-1/2 top-1/2 h-24 w-36 -translate-x-1/2 -translate-y-1/2 rounded-[999px_999px_28px_28px] bg-[#f3b63e]" />
+              <div className="absolute bottom-6 left-1/2 h-18 w-22 -translate-x-1/2 rounded-[30px_30px_14px_14px] bg-[#f06b71]" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Filters Sidebar Section */}
-      <div className="grid gap-8 xl:grid-cols-[300px_minmax(0,1fr)]">
-        <aside className="self-start rounded-md border border-neutral-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center gap-3">
-            <p className="text-xl font-semibold tracking-tight text-neutral-900">
+      <div className="grid gap-6 xl:grid-cols-[250px_minmax(0,1fr)]">
+        <aside className="self-start rounded-md border border-neutral-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-bold tracking-tight text-neutral-900">
               FILTER BY:
             </p>
           </div>
-          <hr className="my-6 border-gray-300" />
-          <div className="mt-7 space-y-7">
-            <section className="space-y-4">
-              <h3 className="text-[17px] font-semibold text-neutral-900">
+          <hr className="my-4 border-gray-200" />
+
+          {/* Filters section (Pricing/Categories/DateFields/Searching) */}
+          <div className="mt-4 space-y-5">
+            {/* Filter by categories */}
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold text-neutral-800">
                 Category
               </h3>
               <Select
-                defaultValue={selectedCategory}
-                onValueChange={(value) => setSelectedCategory(value)}
+                value={selectedCategory || "all-categories"}
+                onValueChange={(val) =>
+                  setSelectedCategory(val === "all-categories" ? "" : val)
+                }
               >
-                <SelectTrigger className="h-12 w-full rounded-md border border-neutral-200 bg-white px-4 text-[15px] text-neutral-800 shadow-sm data-[size=default]:h-12">
+                <SelectTrigger className="h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-800 shadow-sm data-[size=default]:h-10">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
@@ -101,38 +123,39 @@ export default function ProductListsGrid() {
               </Select>
             </section>
 
-            <section className="space-y-4">
-              <h3 className="text-[17px] font-semibold text-neutral-900">
+            {/* Filter by products price range */}
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold text-neutral-800">
                 Price Range
               </h3>
-
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <Input
-                  type="text"
-                  value={minPrice}
-                  onChange={(event) => setMinPrice(event.target.value)}
+                  type="number"
                   placeholder="Min price"
-                  className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="h-10 rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 shadow-[0_1px_3px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
                 />
                 <Input
-                  type="text"
-                  value={maxPrice}
-                  onChange={(event) => setMaxPrice(event.target.value)}
+                  type="number"
                   placeholder="1000000"
-                  className="h-12 rounded-md border-neutral-200 bg-white px-4 text-[15px] text-neutral-900 shadow-[0_2px_6px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="h-10 rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 shadow-[0_1px_3px_rgba(0,0,0,0.04)] placeholder:text-neutral-400 focus-visible:ring-0"
                 />
               </div>
             </section>
 
-            <section className="space-y-4">
-              <h3 className="text-[17px] font-semibold text-neutral-900">
+            {/* Filter by date posted */}
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold text-neutral-800">
                 Date Posted
               </h3>
-              <div className="space-y-3 text-[16px] text-neutral-900">
-                {DATE_FILTERS_OPTIONS.map((dateOption) => (
+              <div className="space-y-2 text-sm text-neutral-900">
+                {DATE_POSTED_OPTIONS.map((dateOption) => (
                   <label
                     key={dateOption.label}
-                    className="flex cursor-pointer items-center gap-3"
+                    className="flex cursor-pointer items-center gap-2.5"
                   >
                     <input
                       type="radio"
@@ -142,7 +165,7 @@ export default function ProductListsGrid() {
                       value={dateOption.value}
                       onChange={() => setDatePosted(dateOption.value)}
                     />
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900 text-xs">
                       ✓
                     </span>
                     <span>{dateOption.label}</span>
@@ -153,26 +176,27 @@ export default function ProductListsGrid() {
           </div>
         </aside>
 
-        {/* Search and Filters Section */}
-        <div className="space-y-5">
-          <section className="space-y-4">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-              <div className="flex flex-1 items-center gap-3">
-                <div className="flex h-12 flex-1 items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 shadow-sm">
-                  <Search className="h-5 w-5 text-neutral-400" />
+        {/* Filter by searching through the products */}
+        <div className="space-y-4">
+          <section className="space-y-3">
+            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex flex-1 items-center gap-2">
+                <div className="flex h-10 flex-1 items-center gap-2.5 rounded-lg border border-neutral-200 bg-white px-3 shadow-sm">
+                  <Search className="h-4 w-4 text-neutral-400" />
                   <Input
                     type="text"
                     value={search}
-                    onChange={(event) => setSearch(event.target.value)}
+                    onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search..."
-                    className="h-auto border-0 bg-transparent p-0 text-[15px] text-neutral-800 shadow-none placeholder:text-neutral-400 focus-visible:ring-0"
+                    className="h-auto border-0 bg-transparent p-0 text-sm text-neutral-800 shadow-none placeholder:text-neutral-400 focus-visible:ring-0"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* Filter by products creation age */}
+              <div className="flex items-center gap-2">
                 <Select defaultValue="newest">
-                  <SelectTrigger className="h-12 w-full min-w-55 rounded-2xl border border-neutral-200 bg-white px-4 text-[15px] text-neutral-800 shadow-sm data-[size=default]:h-12">
+                  <SelectTrigger className="h-10 w-full min-w-44 rounded-lg border border-neutral-200 bg-white px-3 text-sm text-neutral-800 shadow-sm data-[size=default]:h-10">
                     <SelectValue placeholder="Newest First" />
                   </SelectTrigger>
                   <SelectContent>
@@ -192,11 +216,41 @@ export default function ProductListsGrid() {
 
           {/* Products Section */}
           <section>
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-xl font-medium text-neutral-500">
-                No products found.
+            {/* Products data */}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Spinner className="size-8 text-neutral-400" />
+              </div>
+            ) : error ? (
+              <p className="text-sm text-red-500">
+                Couldn&apos;t load products. Please try again later.
               </p>
-            </div>
+            ) : products.length === 0 ? (
+              <div className="flex items-center-safe justify-center py-20">
+                <p className="text-xl text-gray-400">No products found.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+
+            {/* Load more products if nextPageCursorValue exists */}
+            {hasNextPage && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  onClick={loadMoreProducts}
+                  id="register-customer-btn"
+                  variant="outline"
+                  size="default"
+                  className="flex items-center justify-center h-10 border-gray-900 text-gray-900 hover:bg-gray-100 font-medium px-6 text-base cursor-pointer"
+                >
+                  Load more products
+                </Button>
+              </div>
+            )}
           </section>
         </div>
       </div>

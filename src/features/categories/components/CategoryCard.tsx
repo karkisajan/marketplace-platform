@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -13,7 +12,7 @@ interface CategoryProps {
 const FALLBACK_IMAGE = "/icons/category.svg";
 
 export default function CategoryCard({ category }: CategoryProps) {
-  const [imgSrc, setImgSrc] = useState(category.imageUrl || FALLBACK_IMAGE);
+  const [imgSrc, setImgSrc] = useState<string>(category.imageUrl || FALLBACK_IMAGE);
   const isFallback: boolean = imgSrc === FALLBACK_IMAGE;
 
   return (

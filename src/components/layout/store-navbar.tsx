@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import CategoryMenubar from "@/features/categories/components/CategoryMenubar";
 
 export default function StoreNavbar() {
   return (
