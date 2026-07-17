@@ -8,15 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ProductCard from "./ProductCard";
-import { useProducts } from "../hooks/useProducts";
 import { useMemo, useState } from "react";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { Button } from "@/components/ui/button";
 import { DatePostedTypeEnum } from "@/common/enums/date-filters.enum";
-import { filterLeafNodeCategories } from "@/common/utils/filter-leafCategories.util";
-import { CategoryNode } from "@/features/categories/types/category-tree.types";
-import { useCategoriesTree } from "@/features/categories/hooks/useCategoriesTree";
+import { CategoryNode } from "@/common/utils/filter-leafCategories.util";
 
 export default function ProductListsGrid() {
   const DATE_FILTERS_OPTIONS: { label: string; value: DatePostedTypeEnum }[] = [
@@ -36,22 +30,7 @@ export default function ProductListsGrid() {
     DatePostedTypeEnum.ANY_TIME,
   );
 
-  const { products, isLoading, error, hasNextPage, loadMoreProducts } =
-    useProducts({
-      limit: 9,
-      search: search,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
-      categoryId:
-        selectedCategory !== "all-categories" ? selectedCategory : undefined,
-      datePosted: datePosted,
-    });
-
-  const { categories }: { categories: CategoryNode[] } = useCategoriesTree();
-  const leafCategories: CategoryNode[] = useMemo(
-    () => filterLeafNodeCategories(categories),
-    [categories],
-  );
+  const leafCategories: CategoryNode[] = [];
 
   return (
     <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-7 px-4 py-5 sm:px-6 lg:px-10">
@@ -211,46 +190,14 @@ export default function ProductListsGrid() {
             </div>
           </section>
 
-          {/* Loading spinner state */}
-          {isLoading && <LoadingSpinner />}
-
-          {/* Error handler state */}
-          {!isLoading && error && (
-            <p className="text-center text-red-500">{error}</p>
-          )}
-
           {/* Products Section */}
           <section>
-            {!isLoading &&
-              !error &&
-              (products.length > 0 ? (
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <p className="text-xl font-medium text-neutral-500">
-                    No products found.
-                  </p>
-                </div>
-              ))}
-          </section>
-
-          {!isLoading && hasNextPage && (
-            <div className="mt-10 flex justify-center">
-              <Button
-              id="register-customer-btn"
-              variant="outline"
-              size="default"
-              className="flex justify-center items-center h-12 border-gray-900 text-gray-900 hover:bg-gray-100 font-medium px-6 text-base cursor-pointer"
-              onClick={loadMoreProducts}
-            >
-              {isLoading ? <LoadingSpinner /> : "Load more products"}
-            </Button>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-xl font-medium text-neutral-500">
+                No products found.
+              </p>
             </div>
-          )}
+          </section>
         </div>
       </div>
     </div>

@@ -1,7 +1,28 @@
 "use client";
 import { Star } from "lucide-react";
 import Image from "next/image";
-import { Product } from "../types/product-lists.types";
+
+export interface ProductImage {
+  id: string;
+  imageUrl: string;
+}
+
+export interface ProductVariant {
+  id: string;
+  sellingPrice: string;
+  crossPrice: string;
+  productImage: ProductImage;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  averageRatings: number;
+  totalReviews: number;
+  productVariant: ProductVariant;
+}
 
 interface ProductProps {
   product: Product;

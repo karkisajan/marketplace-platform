@@ -1,7 +1,14 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Category } from "../types/category-lists.types";
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  imageUrl: string;
+}
+
 interface CategoryProps {
   category: Category;
 }

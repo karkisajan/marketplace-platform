@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Product } from "@/features/products/types/product-lists.types";
+import { Product } from "@/features/products/components/ProductCard";
 import ProductCard from "@/features/products/components/ProductCard";
 
 const FAKE_PRODUCTS: Product[] = [
@@ -204,7 +204,11 @@ const FAKE_SUBCATEGORIES = [
   { id: "s5", label: "Wardrobes" },
 ];
 
-export default function CategoryProductsGrid() {
+interface PageProps {
+  slug: string;
+}
+
+export default function CategoryProductsGrid({ slug }: PageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-10">
       {/* Breadcrumb */}

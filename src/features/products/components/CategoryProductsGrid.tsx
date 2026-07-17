@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import ProductCard from "./ProductCard";
-import { Product } from "../types/product-lists.types";
+import { Product } from "./ProductCard";
 import Link from "next/link";
 
 const FAKE_PRODUCTS: Product[] = [

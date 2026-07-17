@@ -1,4 +1,10 @@
-import { CategoryNode } from "@/features/categories/types/category-tree.types";
+export interface CategoryNode {
+  id: string;
+  name: string;
+  slug: string;
+  imageUrl?: string | null;
+  children?: CategoryNode[];
+}
 
 export const filterLeafNodeCategories = (categories: CategoryNode[]): CategoryNode[] => {
   const leaves: CategoryNode[] = [];
