@@ -26,26 +26,32 @@ import { useDebouncedValue } from "@/common/hooks/useDebouncedValue";
 
 export default function ProductListsGrid() {
   const [search, setSearch] = useState<string>("");
-  const debouncedSearch = useDebouncedValue(search, 400);
+  const debouncedSearch: string = useDebouncedValue(search, 400);
 
   const [minPrice, setMinPrice] = useState<string>("");
-  const debouncedMinPrice = useDebouncedValue(minPrice, 400);
+  const debouncedMinPrice: string = useDebouncedValue(minPrice, 400);
 
   const [maxPrice, setMaxPrice] = useState<string>("");
-  const debouncedMaxPrice = useDebouncedValue(maxPrice, 400);
+  const debouncedMaxPrice: string = useDebouncedValue(maxPrice, 400);
 
-  const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(DatePostedTypeEnum.ANY_TIME);
+  const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(DatePostedTypeEnum.ANY_TIME,);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
-  const { products, isLoading, error, hasNextPage, loadMoreProducts } =
-    useProductLists({
-      limit: 12,
-      search: debouncedSearch || undefined,
-      datePosted: datePosted,
-      categoryId: selectedCategory || undefined,
-      minPrice: debouncedMinPrice ? Number(minPrice) : undefined,
-      maxPrice: debouncedMaxPrice ? Number(maxPrice) : undefined,
-    });
+  const {
+    products,
+    isLoading,
+    error,
+    hasNextPage,
+    loadMoreProducts,
+    isLoadingMore,
+  } = useProductLists({
+    limit: 12,
+    search: debouncedSearch || undefined,
+    datePosted: datePosted,
+    categoryId: selectedCategory || undefined,
+    minPrice: debouncedMinPrice ? Number(debouncedMinPrice) : undefined,
+    maxPrice: debouncedMaxPrice ? Number(debouncedMaxPrice) : undefined,
+  });
 
   const { categories } = useCategoryTree();
   const leafCategories: CategoryNode[] = filterLeafNodeCategories(categories);
@@ -216,26 +222,27 @@ export default function ProductListsGrid() {
 
           {/* Products Section */}
           <section>
-            {/* Products data */}
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <Spinner className="size-8 text-neutral-400" />
-              </div>
-            ) : error ? (
-              <p className="text-sm text-red-500">
-                Couldn&apos;t load products. Please try again later.
-              </p>
-            ) : products.length === 0 ? (
-              <div className="flex items-center-safe justify-center py-20">
-                <p className="text-xl text-gray-400">No products found.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
+            <div className="relative">
+              {isLoading && products.length === 0 ? (
+                <div className="flex items-center justify-center py-20">
+                  <Spinner className="size-8 text-neutral-400" />
+                </div>
+              ) : error ? (
+                <p className="text-sm text-red-500">
+                  Couldn&apos;t load products. Please try again later.
+                </p>
+              ) : products.length === 0 ? (
+                <div className="flex items-center-safe justify-center py-20">
+                  <p className="text-xl text-gray-400">No products found.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Load more products if nextPageCursorValue exists */}
             {hasNextPage && (
@@ -247,7 +254,7 @@ export default function ProductListsGrid() {
                   size="default"
                   className="flex items-center justify-center h-10 border-gray-900 text-gray-900 hover:bg-gray-100 font-medium px-6 text-base cursor-pointer"
                 >
-                  Load more products
+                  {isLoadingMore ? "Loading..." : "Load more products"}
                 </Button>
               </div>
             )}

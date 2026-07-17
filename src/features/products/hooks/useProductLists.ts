@@ -24,6 +24,7 @@ export function useProductLists({
   const [hasNextPage, setHasNextPage] = useState<boolean>(true);
   const [nextPageCursor, setNextPageCursor] = useState<string | undefined>(undefined,);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadMoreRequestId = useRef<number>(0);
@@ -72,7 +73,7 @@ export function useProductLists({
    * Loadmore products based on the nextPage cursor value
    */
   const loadMoreProducts = async () => {
-    setIsLoading(true);
+    setIsLoadingMore(true);
     setError(null);
 
     const requestId: number = ++loadMoreRequestId.current;
@@ -100,7 +101,7 @@ export function useProductLists({
       }
     } finally {
       if (requestId === loadMoreRequestId.current) {
-        setIsLoading(false);
+        setIsLoadingMore(false);
       }
     }
   };
@@ -108,6 +109,7 @@ export function useProductLists({
   return {
     products,
     isLoading,
+    isLoadingMore,
     error,
     hasNextPage,
     loadMoreProducts,
