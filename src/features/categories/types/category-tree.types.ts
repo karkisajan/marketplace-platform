@@ -2,8 +2,8 @@ export interface CategoryNode {
   id: string;
   name: string;
   slug: string;
-  imageUrl: string;
-  category: CategoryNode[];
+  imageUrl?: string | null;
+  children?: CategoryNode[];
 }
 
 export interface CategoryTreeResponse {

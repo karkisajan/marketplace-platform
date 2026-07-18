@@ -10,10 +10,9 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Product } from "@/features/products/components/ProductCard";
 import ProductCard from "@/features/products/components/ProductCard";
 
-const FAKE_PRODUCTS: Product[] = [
+const FAKE_PRODUCTS = [
   {
     id: "1",
     name: "2/2/1 Sofa Set",
@@ -286,7 +285,7 @@ export default function CategoryProductsGrid({ slug }: PageProps) {
       {/* Products grid */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {FAKE_PRODUCTS.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product as any} />
         ))}
       </div>
 

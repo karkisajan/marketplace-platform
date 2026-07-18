@@ -1,4 +1,3 @@
-"use client";
 import { ChevronRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,10 +9,9 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import ProductCard from "./ProductCard";
-import { Product } from "./ProductCard";
 import Link from "next/link";
 
-const FAKE_PRODUCTS: Product[] = [
+const FAKE_PRODUCTS = [
   {
     id: "1",
     name: "2/2/1 Sofa Set",
@@ -242,7 +240,7 @@ export default function CategoryProductsGrid() {
       {/* Products grid */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {FAKE_PRODUCTS.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product as any} />
         ))}
       </div>
 
