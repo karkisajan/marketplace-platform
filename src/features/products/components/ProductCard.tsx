@@ -17,7 +17,7 @@ export default function ProductCard({ product }: ProductProps) {
 
   return (
     <div className="group relative w-full overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-xs transition-all duration-300 hover:shadow-md">
-      <div className="relative aspect-4/3 w-full bg-neutral-50 overflow-hidden">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-50">
         <Image
           sizes="(max-width: 768px) 50vw, 25vw"
           src={imgSrc}
@@ -35,8 +35,8 @@ export default function ProductCard({ product }: ProductProps) {
             {product.name}
           </h3>
         </div>
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-baseline gap-1.5 flex-wrap">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-baseline gap-1.5">
             {product.productVariant.crossPrice && (
               <span className="text-xs text-neutral-400 line-through">
                 Rs.{Number(product.productVariant.crossPrice).toLocaleString()}

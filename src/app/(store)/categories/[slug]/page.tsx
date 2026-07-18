@@ -6,10 +6,9 @@ interface PageProps {
 
 export default async function CategoryProductsPage({ params }: PageProps) {
   const { slug } = await params;
-  console.log(slug);
   return (
     <div>
-      <CategoryProductsGrid slug={slug}/>
+      <CategoryProductsGrid slug={slug} />
     </div>
   );
 }
