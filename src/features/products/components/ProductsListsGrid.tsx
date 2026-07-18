@@ -1,3 +1,4 @@
+"use client";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -7,8 +8,101 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useProductLists } from "../hooks/useProductLists";
+import {
+  DATE_POSTED_OPTIONS,
+  DatePostedTypeEnum,
+} from "@/common/enums/date-filters.enum";
+import {
+  CategoryNode,
+  filterLeafNodeCategories,
+} from "@/common/utils/filter-leafCategories.util";
+import { useCategoryTree } from "@/features/categories/hooks/useCategoryTree";
+import { useEffect, useState } from "react";
+import ProductCard from "./ProductCard";
+import { Spinner } from "@/components/ui/spinner";
+import { Button } from "@/components/ui/button";
+import { useDebouncedValue } from "@/common/hooks/useDebouncedValue";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 export default function ProductListsGrid() {
+  const router = useRouter();
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
+
+  const [search, setSearch] = useState<string | undefined>(
+    searchParams.get("search") || "",
+  );
+  const debouncedSearch: string | undefined = useDebouncedValue(search, 400);
+
+  const [minPrice, setMinPrice] = useState<string | undefined>(
+    searchParams.get("minPrice") || "",
+  );
+  const debouncedMinPrice: string | undefined = useDebouncedValue(
+    minPrice,
+    400,
+  );
+
+  const [maxPrice, setMaxPrice] = useState<string | undefined>(
+    searchParams.get("maxPrice") || "",
+  );
+  const debouncedMaxPrice: string | undefined = useDebouncedValue(
+    maxPrice,
+    400,
+  );
+
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    searchParams.get("categoryId") || "",
+  );
+  const [datePosted, setDatePosted] = useState<DatePostedTypeEnum>(
+    (searchParams.get("datePosted") as DatePostedTypeEnum) ||
+      DatePostedTypeEnum.ANY_TIME,
+  );
+
+  const {
+    products,
+    isLoading,
+    isLoadingMore,
+    error,
+    hasNextPage,
+    loadMoreProducts,
+  } = useProductLists({
+    limit: 12,
+    search: debouncedSearch,
+    minPrice: debouncedMinPrice ? Number(debouncedMinPrice) : undefined,
+    maxPrice: debouncedMaxPrice ? Number(debouncedMaxPrice) : undefined,
+    categoryId: selectedCategory,
+    datePosted: datePosted,
+  });
+
+  const { categories } = useCategoryTree();
+  const leafCategories: CategoryNode[] = filterLeafNodeCategories(categories);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (debouncedSearch) params.set("search", debouncedSearch);
+    if (debouncedMinPrice) params.set("minPrice", debouncedMinPrice);
+    if (debouncedMaxPrice) params.set("maxPrice", debouncedMaxPrice);
+    if (datePosted && datePosted !== DatePostedTypeEnum.ANY_TIME) {
+      params.set("datePosted", datePosted);
+    }
+    if (selectedCategory) params.set("categoryId", selectedCategory);
+
+    const query = params.toString();
+    router.replace(query ? `${pathName}?${query}` : pathName, {
+      scroll: false,
+    });
+  }, [
+    debouncedSearch,
+    debouncedMinPrice,
+    debouncedMaxPrice,
+    selectedCategory,
+    datePosted,
+    pathName,
+    router,
+  ]);
+
   return (
     <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-6 px-4 py-4 sm:px-6 lg:px-10">
       <section className="relative overflow-hidden rounded-[20px] bg-linear-to-r from-[#951d1d] via-[#b32727] to-[#c5413d] px-6 py-8 text-white shadow-sm sm:px-8 sm:py-10 lg:px-10 lg:py-10">
@@ -67,15 +161,25 @@ export default function ProductListsGrid() {
               <h3 className="text-sm font-semibold text-neutral-800">
                 Category
               </h3>
-              <Select defaultValue="all-categories">
+              <Select
+                value={selectedCategory ?? "all-categories"}
+                onValueChange={(value) =>
+                  setSelectedCategory(
+                    value === "all-categories" ? "" : value,
+                  )
+                }
+                defaultValue="all-categories"
+              >
                 <SelectTrigger className="h-10 w-full rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-800 shadow-sm data-[size=default]:h-10">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all-categories">All Categories</SelectItem>
-                  <SelectItem value="electronics">Electronics</SelectItem>
-                  <SelectItem value="fashion">Fashion</SelectItem>
-                  <SelectItem value="home-garden">Home & Garden</SelectItem>
+                  {leafCategories.map((leafCategory) => (
+                    <SelectItem key={leafCategory.id} value={leafCategory.id}>
+                      {leafCategory.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </section>
@@ -86,11 +190,15 @@ export default function ProductListsGrid() {
               </h3>
               <div className="space-y-2">
                 <Input
+                  value={minPrice}
+                  onChange={(event) => setMinPrice(event.target.value)}
                   type="number"
                   placeholder="Min price"
                   className="h-10 rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 shadow-[0_1px_3px_rgba(0,0,0,0.04)] [appearance:textfield] placeholder:text-neutral-400 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
                 <Input
+                  value={maxPrice}
+                  onChange={(event) => setMaxPrice(event.target.value)}
                   type="number"
                   placeholder="1000000"
                   className="h-10 rounded-md border border-neutral-200 bg-white px-3 text-sm text-neutral-900 shadow-[0_1px_3px_rgba(0,0,0,0.04)] [appearance:textfield] placeholder:text-neutral-400 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
@@ -103,24 +211,24 @@ export default function ProductListsGrid() {
                 Date Posted
               </h3>
               <div className="space-y-2 text-sm text-neutral-900">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-neutral-800 text-xs text-neutral-900">
-                    ✓
-                  </span>
-                  <span>Any time</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-neutral-300 text-xs text-transparent">
-                    ✓
-                  </span>
-                  <span>Today</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-neutral-300 text-xs text-transparent">
-                    ✓
-                  </span>
-                  <span>This week</span>
-                </div>
+                {DATE_POSTED_OPTIONS.map((dateOption) => (
+                  <label
+                    key={dateOption.value}
+                    className="flex cursor-pointer items-center gap-2.5"
+                  >
+                    <input
+                      type="radio"
+                      name="date-posted"
+                      className="peer sr-only"
+                      checked={datePosted === dateOption.value}
+                      onChange={() => setDatePosted(dateOption.value)}
+                    />
+                    <span className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-neutral-800 text-transparent transition-colors peer-checked:bg-white peer-checked:text-neutral-900 text-xs">
+                      ✓
+                    </span>
+                    <span>{dateOption.label}</span>
+                  </label>
+                ))}
               </div>
             </section>
           </div>
@@ -133,6 +241,8 @@ export default function ProductListsGrid() {
                 <div className="flex h-10 flex-1 items-center gap-2.5 rounded-lg border border-neutral-200 bg-white px-3 shadow-sm">
                   <Search className="h-4 w-4 text-neutral-400" />
                   <Input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
                     type="text"
                     placeholder="Search..."
                     className="h-auto border-0 bg-transparent p-0 text-sm text-neutral-800 shadow-none placeholder:text-neutral-400 focus-visible:ring-0"
@@ -161,7 +271,42 @@ export default function ProductListsGrid() {
           </section>
 
           <section>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4"></div>
+            <div className="relative">
+              {isLoading && products.length === 0 ? (
+                <div className="flex items-center justify-center py-20">
+                  <Spinner className="size-8 text-neutral-400" />
+                </div>
+              ) : error ? (
+                <p className="text-sm text-red-500">
+                  Couldn&apos;t load products. Please try again later.
+                </p>
+              ) : products.length === 0 ? (
+                <p className="text-center items-center py-8 text-lg text-gray-500">
+                  No products found.
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Load more products based on the cursor value */}
+            {hasNextPage && (
+              <div className="flex items-center justify-center py-6">
+                <Button
+                  onClick={loadMoreProducts}
+                  id="load-more-products-btn"
+                  variant="outline"
+                  size="default"
+                  className="h-10 border-gray-900 text-gray-900 hover:bg-gray-100 font-medium px-6 text-base cursor-pointer"
+                >
+                  {isLoadingMore ? "Loading..." : "Load more products"}
+                </Button>
+              </div>
+            )}
           </section>
         </div>
       </div>
