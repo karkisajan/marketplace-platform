@@ -25,6 +25,7 @@ export const getProductLists = async ({
   datePosted,
 }: ProductParamsOptions): Promise<ProductListsResponse> => {
   const query = new URLSearchParams();
+  
   if (limit) query.set("limit", String(limit));
   if (cursor) query.set("cursor", cursor);
   if (search) query.set("search", search);
