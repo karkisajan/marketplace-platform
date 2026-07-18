@@ -1,10 +1,19 @@
 import api from "@/lib/axios";
 import { CategoryListsResponse } from "../types/category-lists.types";
 import { CategoryTreeResponse } from "../types/category-tree.types";
+import { CategoryProductListsResponse } from "../types/category-productLists";
 
 interface CategoryParamsOptions {
   initialPage: number;
   initialLimit: number;
+}
+
+interface CategoryProductsParamsOptions {
+  slug: string;
+  limit: number;
+  cursor?: string;
+  categoryId?: string;
+  search?: string;
 }
 
 /**
@@ -28,6 +37,31 @@ export const getCategoryLists = async ({
 export const getCategoryTree = async (): Promise<CategoryTreeResponse> => {
   const { data } = await api.get<CategoryTreeResponse>(
     `categories/category-tree`,
+  );
+
+  return data;
+};
+
+/**
+ * ---- GET - CATEGORY PRODUCT LISTS
+ */
+export const getCategoryProductsBySlug = async ({
+  slug,
+  limit,
+  cursor,
+  categoryId,
+  search,
+}: CategoryProductsParamsOptions): Promise<CategoryProductListsResponse> => {
+  const { data } = await api.get<CategoryProductListsResponse>(
+    `/categories/${slug}/products`,
+    {
+      params: {
+        limit: limit,
+        cursor: cursor,
+        search: search,
+        categoryId: categoryId,
+      },
+    },
   );
 
   return data;
