@@ -1,5 +1,6 @@
 import HomePageCategoriesLists from "@/features/categories/components/HomePageCategoriesLists";
 import HomePageProductsLists from "@/features/products/components/HomePageProductsLists";
+import StoreFooter from "@/components/layout/store-footer";
 
 export default function StorePage() {
   return (
@@ -33,6 +34,8 @@ export default function StorePage() {
           <HomePageProductsLists />
         </div>
       </section>
+
+      <StoreFooter />
     </div>
   );
 }
