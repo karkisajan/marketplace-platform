@@ -24,7 +24,7 @@ const productImages = [
 
 const colourOptions = [
   { name: "Natural", color: "#efe4d0", selected: true },
-  { name: "Graphite", color: "#3f4753" },
+  { name: "Graphite", color: "#3f4753" }, 
   { name: "Pearl", color: "#d7dce2" },
   { name: "Ice Blue", color: "#ced9e4" },
 ];
